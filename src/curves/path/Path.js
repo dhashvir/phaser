@@ -16,6 +16,7 @@ var QuadraticBezierCurve = require('../QuadraticBezierCurve');
 var Rectangle = require('../../geom/rectangle/Rectangle');
 var SplineCurve = require('../SplineCurve');
 var Vector2 = require('../../math/Vector2');
+var MATH_CONST = require('../../math/const');
 
 /**
  * @classdesc
@@ -404,8 +405,8 @@ var Path = new Class({
         out.y = Number.MAX_VALUE;
 
         var bounds = new Rectangle();
-        var maxRight = Number.MIN_SAFE_INTEGER;
-        var maxBottom = Number.MIN_SAFE_INTEGER;
+        var maxRight = MATH_CONST.MIN_SAFE_INTEGER;
+        var maxBottom = MATH_CONST.MIN_SAFE_INTEGER;
 
         for (var i = 0; i < this.curves.length; i++)
         {
@@ -568,14 +569,12 @@ var Path = new Class({
     },
 
     /**
-     * Returns the defined starting point of the Path.
-     *
-     * This is not necessarily equal to the starting point of the first Curve if it differs from {@link startPoint}.
+     * Get a sequence of points on the path.
      *
      * @method Phaser.Curves.Path#getPoints
      * @since 3.0.0
      *
-     * @param {integer} [divisions=12] - The number of points to divide the path in to.
+     * @param {integer} [divisions=12] - The number of divisions per resolution per curve.
      *
      * @return {Phaser.Math.Vector2[]} An array of Vector2 objects that containing the points along the Path.
      */
@@ -625,7 +624,7 @@ var Path = new Class({
 
     /**
      * Returns a randomly chosen point anywhere on the path. This follows the same rules as `getPoint` in that it may return a point on any Curve inside this path.
-     * 
+     *
      * When calling this method multiple times, the points are not guaranteed to be equally spaced spatially.
      *
      * @method Phaser.Curves.Path#getRandomPoint
@@ -646,7 +645,7 @@ var Path = new Class({
 
     /**
      * Divides this Path into a set of equally spaced points,
-     * 
+     *
      * The resulting points are equally spaced with respect to the points' position on the path, but not necessarily equally spaced spatially.
      *
      * @method Phaser.Curves.Path#getSpacedPoints
@@ -740,7 +739,7 @@ var Path = new Class({
 
     /**
      * Creates a "gap" in this path from the path's current end point to the given coordinates.
-     * 
+     *
      * After calling this function, this Path's end point will be equal to the given coordinates
      *
      * @method Phaser.Curves.Path#moveTo
@@ -764,7 +763,7 @@ var Path = new Class({
     },
 
     /**
-     * Converts this Path to a JSON object containing the path information and its consitutent curves.
+     * Converts this Path to a JSON object containing the path information and its constituent curves.
      *
      * @method Phaser.Curves.Path#toJSON
      * @since 3.0.0
