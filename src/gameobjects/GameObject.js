@@ -1,6 +1,6 @@
 /**
  * @author       Richard Davey <rich@photonstorm.com>
- * @copyright    2019 Photon Storm Ltd.
+ * @copyright    2020 Photon Storm Ltd.
  * @license      {@link https://opensource.org/licenses/MIT|MIT License}
  */
 
@@ -166,10 +166,10 @@ var GameObject = new Class({
         this.input = null;
 
         /**
-         * If this Game Object is enabled for physics then this property will contain a reference to a Physics Body.
+         * If this Game Object is enabled for Arcade or Matter Physics then this property will contain a reference to a Physics Body.
          *
          * @name Phaser.GameObjects.GameObject#body
-         * @type {?(object|Phaser.Physics.Arcade.Body|Phaser.Physics.Impact.Body)}
+         * @type {?(object|Phaser.Physics.Arcade.Body|MatterJS.BodyType)}
          * @default null
          * @since 3.0.0
          */

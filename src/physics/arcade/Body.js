@@ -1,7 +1,7 @@
 /**
  * @author       Richard Davey <rich@photonstorm.com>
  * @author       Benjamin D. Richards <benjamindrichards@gmail.com>
- * @copyright    2019 Photon Storm Ltd.
+ * @copyright    2020 Photon Storm Ltd.
  * @license      {@link https://opensource.org/licenses/MIT|MIT License}
  */
 
@@ -33,8 +33,8 @@ var Body = new Class({
 
     function Body (world, gameObject)
     {
-        var width = (gameObject.width) ? gameObject.width : 64;
-        var height = (gameObject.height) ? gameObject.height : 64;
+        var width = (gameObject.displayWidth) ? gameObject.displayWidth : 64;
+        var height = (gameObject.displayHeight) ? gameObject.displayHeight : 64;
 
         /**
          * The Arcade Physics simulation this Body belongs to.
@@ -148,7 +148,10 @@ var Body = new Class({
          * @type {Phaser.Math.Vector2}
          * @since 3.0.0
          */
-        this.position = new Vector2(gameObject.x, gameObject.y);
+        this.position = new Vector2(
+            gameObject.x - gameObject.scaleX * gameObject.displayOriginX,
+            gameObject.y - gameObject.scaleY * gameObject.displayOriginY
+        );
 
         /**
          * The position of this Body during the previous step.
@@ -190,7 +193,7 @@ var Body = new Class({
         this.rotation = gameObject.angle;
 
         /**
-         * The Body's rotation, in degrees, during the previous step.
+         * The Body rotation, in degrees, during the previous step.
          *
          * @name Phaser.Physics.Arcade.Body#preRotation
          * @type {number}
@@ -199,22 +202,26 @@ var Body = new Class({
         this.preRotation = gameObject.angle;
 
         /**
-         * The width of the Body's boundary, in pixels.
-         * If the Body is circular, this is also the Body's diameter.
+         * The width of the Body boundary, in pixels.
+         * If the Body is circular, this is also the diameter.
+         * If you wish to change the width use the `Body.setSize` method.
          *
          * @name Phaser.Physics.Arcade.Body#width
          * @type {number}
+         * @readonly
          * @default 64
          * @since 3.0.0
          */
         this.width = width;
 
         /**
-         * The height of the Body's boundary, in pixels.
-         * If the Body is circular, this is also the Body's diameter.
+         * The height of the Body boundary, in pixels.
+         * If the Body is circular, this is also the diameter.
+         * If you wish to change the height use the `Body.setSize` method.
          *
          * @name Phaser.Physics.Arcade.Body#height
          * @type {number}
+         * @readonly
          * @default 64
          * @since 3.0.0
          */
@@ -274,7 +281,7 @@ var Body = new Class({
          * @type {Phaser.Math.Vector2}
          * @since 3.0.0
          */
-        this.center = new Vector2(gameObject.x + this.halfWidth, gameObject.y + this.halfHeight);
+        this.center = new Vector2(this.position.x + this.halfWidth, this.position.y + this.halfHeight);
 
         /**
          * The Body's velocity, in pixels per second.
@@ -900,23 +907,27 @@ var Body = new Class({
     resetFlags: function ()
     {
         //  Store and reset collision flags
-        this.wasTouching.none = this.touching.none;
-        this.wasTouching.up = this.touching.up;
-        this.wasTouching.down = this.touching.down;
-        this.wasTouching.left = this.touching.left;
-        this.wasTouching.right = this.touching.right;
+        var wasTouching = this.wasTouching;
+        var touching = this.touching;
+        var blocked = this.blocked;
 
-        this.touching.none = true;
-        this.touching.up = false;
-        this.touching.down = false;
-        this.touching.left = false;
-        this.touching.right = false;
+        wasTouching.none = touching.none;
+        wasTouching.up = touching.up;
+        wasTouching.down = touching.down;
+        wasTouching.left = touching.left;
+        wasTouching.right = touching.right;
 
-        this.blocked.none = true;
-        this.blocked.up = false;
-        this.blocked.down = false;
-        this.blocked.left = false;
-        this.blocked.right = false;
+        touching.none = true;
+        touching.up = false;
+        touching.down = false;
+        touching.left = false;
+        touching.right = false;
+
+        blocked.none = true;
+        blocked.up = false;
+        blocked.down = false;
+        blocked.left = false;
+        blocked.right = false;
 
         this.overlapR = 0;
         this.overlapX = 0;
@@ -1229,10 +1240,10 @@ var Body = new Class({
 
         if (center && gameObject.getCenter)
         {
-            var ox = gameObject.displayWidth / 2;
-            var oy = gameObject.displayHeight / 2;
+            var ox = (gameObject.width - width) / 2;
+            var oy = (gameObject.height - height) / 2;
 
-            this.offset.set(ox - this.halfWidth, oy - this.halfHeight);
+            this.offset.set(ox, oy);
         }
 
         this.isCircle = false;
@@ -1634,7 +1645,7 @@ var Body = new Class({
     /**
      * Sets whether this Body collides with the world boundary.
      *
-     * Optionally also sets the World Bounce values. If the `Body.worldBounce` is null, it's set to a new Vec2 first.
+     * Optionally also sets the World Bounce values. If the `Body.worldBounce` is null, it's set to a new Phaser.Math.Vector2 first.
      *
      * @method Phaser.Physics.Arcade.Body#setCollideWorldBounds
      * @since 3.0.0

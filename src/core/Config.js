@@ -1,6 +1,6 @@
 /**
  * @author       Richard Davey <rich@photonstorm.com>
- * @copyright    2019 Photon Storm Ltd.
+ * @copyright    2020 Photon Storm Ltd.
  * @license      {@link https://opensource.org/licenses/MIT|MIT License}
  */
 
@@ -479,6 +479,11 @@ var Config = new Class({
          * @const {integer} Phaser.Core.Config#loaderTimeout - Optional XHR timeout value, in ms.
          */
         this.loaderTimeout = GetValue(config, 'loader.timeout', 0);
+
+        /**
+         * @const {boolean} Phaser.Core.Config#loaderWithCredentials - Optional XHR withCredentials value.
+         */
+        this.loaderWithCredentials = GetValue(config, 'loader.withCredentials', false);
 
         /*
          * Allows `plugins` property to either be an array, in which case it just replaces

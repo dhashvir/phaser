@@ -1,6 +1,6 @@
 /**
  * @author       Richard Davey <rich@photonstorm.com>
- * @copyright    2019 Photon Storm Ltd.
+ * @copyright    2020 Photon Storm Ltd.
  * @license      {@link https://opensource.org/licenses/MIT|MIT License}
  */
 
@@ -213,6 +213,28 @@ var Group = new Class({
          * @since 3.0.0
          */
         this.createMultipleCallback = GetFastValue(config, 'createMultipleCallback', null);
+
+        /**
+         * A function to be called when adding or creating group members.
+         * For internal use only by a Group, or any class that extends it.
+         *
+         * @name Phaser.GameObjects.Group#internalCreateCallback
+         * @type {?Phaser.Types.GameObjects.Group.GroupCallback}
+         * @private
+         * @since 3.22.0
+         */
+        this.internalCreateCallback = GetFastValue(config, 'internalCreateCallback', null);
+
+        /**
+         * A function to be called when removing group members.
+         * For internal use only by a Group, or any class that extends it.
+         *
+         * @name Phaser.GameObjects.Group#internalRemoveCallback
+         * @type {?Phaser.Types.GameObjects.Group.GroupCallback}
+         * @private
+         * @since 3.22.0
+         */
+        this.internalRemoveCallback = GetFastValue(config, 'internalRemoveCallback', null);
 
         if (config)
         {
@@ -499,7 +521,7 @@ var Group = new Class({
      * @param {Phaser.GameObjects.GameObject} child - The Game Object to add.
      * @param {boolean} [addToScene=false] - Also add the Game Object to the scene.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     add: function (child, addToScene)
     {
@@ -511,6 +533,11 @@ var Group = new Class({
         }
 
         this.children.set(child);
+
+        if (this.internalCreateCallback)
+        {
+            this.internalCreateCallback.call(this, child);
+        }
 
         if (this.createCallback)
         {
@@ -543,7 +570,7 @@ var Group = new Class({
      * @param {Phaser.GameObjects.GameObject[]} children - The Game Objects to add.
      * @param {boolean} [addToScene=false] - Also add the Game Objects to the scene.
      *
-     * @return {Phaser.GameObjects.Group} This group.
+     * @return {this} This group.
      */
     addMultiple: function (children, addToScene)
     {
@@ -572,7 +599,7 @@ var Group = new Class({
      * @param {boolean} [removeFromScene=false] - Optionally remove the Group member from the Scene it belongs to.
      * @param {boolean} [destroyChild=false] - Optionally call destroy on the removed Group member.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     remove: function (child, removeFromScene, destroyChild)
     {
@@ -585,6 +612,11 @@ var Group = new Class({
         }
 
         this.children.delete(child);
+
+        if (this.internalRemoveCallback)
+        {
+            this.internalRemoveCallback.call(this, child);
+        }
 
         if (this.removeCallback)
         {
@@ -621,7 +653,7 @@ var Group = new Class({
      * @param {boolean} [removeFromScene=false] - Optionally remove each Group member from the Scene.
      * @param {boolean} [destroyChild=false] - Optionally call destroy on the removed Group members.
      *
-     * @return {Phaser.GameObjects.Group} This group.
+     * @return {this} This group.
      */
     clear: function (removeFromScene, destroyChild)
     {
@@ -984,7 +1016,7 @@ var Group = new Class({
      * @param {string} key - The string-based key of the animation to play.
      * @param {string} [startFrame=0] - Optionally start the animation playing from this frame index.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     playAnimation: function (key, startFrame)
     {
@@ -1083,7 +1115,7 @@ var Group = new Class({
      * @param {integer} [index=0] - An optional offset to start searching from within the items array.
      * @param {integer} [direction=1] - The direction to iterate through the array. 1 is from beginning to end, -1 from end to beginning.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     propertyValueSet: function (key, value, step, index, direction)
     {
@@ -1104,7 +1136,7 @@ var Group = new Class({
      * @param {integer} [index=0] - An optional offset to start searching from within the items array.
      * @param {integer} [direction=1] - The direction to iterate through the array. 1 is from beginning to end, -1 from end to beginning.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     propertyValueInc: function (key, value, step, index, direction)
     {
@@ -1122,7 +1154,7 @@ var Group = new Class({
      * @param {number} value - The amount to set the property to.
      * @param {number} [step=0] - This is added to the `value` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     setX: function (value, step)
     {
@@ -1140,7 +1172,7 @@ var Group = new Class({
      * @param {number} value - The amount to set the property to.
      * @param {number} [step=0] - This is added to the `value` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     setY: function (value, step)
     {
@@ -1160,7 +1192,7 @@ var Group = new Class({
      * @param {number} [stepX=0] - This is added to the `x` amount, multiplied by the iteration counter.
      * @param {number} [stepY=0] - This is added to the `y` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     setXY: function (x, y, stepX, stepY)
     {
@@ -1178,7 +1210,7 @@ var Group = new Class({
      * @param {number} value - The amount to be added to the `x` property.
      * @param {number} [step=0] - This is added to the `value` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     incX: function (value, step)
     {
@@ -1196,7 +1228,7 @@ var Group = new Class({
      * @param {number} value - The amount to be added to the `y` property.
      * @param {number} [step=0] - This is added to the `value` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     incY: function (value, step)
     {
@@ -1216,7 +1248,7 @@ var Group = new Class({
      * @param {number} [stepX=0] - This is added to the `x` amount, multiplied by the iteration counter.
      * @param {number} [stepY=0] - This is added to the `y` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     incXY: function (x, y, stepX, stepY)
     {
@@ -1238,7 +1270,7 @@ var Group = new Class({
      * @param {number} y - The y coordinate to place the first item in the array at.
      * @param {integer} [direction=0] - The iteration direction. 0 = first to last and 1 = last to first.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     shiftPosition: function (x, y, direction)
     {
@@ -1256,7 +1288,7 @@ var Group = new Class({
      * @param {number} value - The amount to set the angle to, in degrees.
      * @param {number} [step=0] - This is added to the `value` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     angle: function (value, step)
     {
@@ -1274,7 +1306,7 @@ var Group = new Class({
      * @param {number} value - The amount to set the rotation to, in radians.
      * @param {number} [step=0] - This is added to the `value` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     rotate: function (value, step)
     {
@@ -1292,7 +1324,7 @@ var Group = new Class({
      * @param {Phaser.Types.Math.Vector2Like} point - Any object with public `x` and `y` properties.
      * @param {number} angle - The angle to rotate by, in radians.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     rotateAround: function (point, angle)
     {
@@ -1311,7 +1343,7 @@ var Group = new Class({
      * @param {number} angle - The angle to rotate by, in radians.
      * @param {number} distance - The distance from the point of rotation in pixels.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     rotateAroundDistance: function (point, angle, distance)
     {
@@ -1329,7 +1361,7 @@ var Group = new Class({
      * @param {number} value - The amount to set the alpha to.
      * @param {number} [step=0] - This is added to the `value` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     setAlpha: function (value, step)
     {
@@ -1349,7 +1381,7 @@ var Group = new Class({
      * @param {number} [bottomLeft] - The tint to be applied to the bottom-left corner of item.
      * @param {number} [bottomRight] - The tint to be applied to the bottom-right corner of item.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     setTint: function (topLeft, topRight, bottomLeft, bottomRight)
     {
@@ -1369,7 +1401,7 @@ var Group = new Class({
      * @param {number} [stepX=0] - This is added to the `originX` amount, multiplied by the iteration counter.
      * @param {number} [stepY=0] - This is added to the `originY` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     setOrigin: function (originX, originY, stepX, stepY)
     {
@@ -1387,7 +1419,7 @@ var Group = new Class({
      * @param {number} value - The amount to set the property to.
      * @param {number} [step=0] - This is added to the `value` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     scaleX: function (value, step)
     {
@@ -1405,7 +1437,7 @@ var Group = new Class({
      * @param {number} value - The amount to set the property to.
      * @param {number} [step=0] - This is added to the `value` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     scaleY: function (value, step)
     {
@@ -1425,7 +1457,7 @@ var Group = new Class({
      * @param {number} [stepX=0] - This is added to the `scaleX` amount, multiplied by the iteration counter.
      * @param {number} [stepY=0] - This is added to the `scaleY` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     scaleXY: function (scaleX, scaleY, stepX, stepY)
     {
@@ -1443,7 +1475,7 @@ var Group = new Class({
      * @param {number} value - The amount to set the property to.
      * @param {number} [step=0] - This is added to the `value` amount, multiplied by the iteration counter.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     setDepth: function (value, step)
     {
@@ -1460,7 +1492,7 @@ var Group = new Class({
      *
      * @param {number} value - The amount to set the property to.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     setBlendMode: function (value)
     {
@@ -1478,7 +1510,7 @@ var Group = new Class({
      * @param {*} hitArea - Either an input configuration object, or a geometric shape that defines the hit area for the Game Object. If not specified a Rectangle will be used.
      * @param {Phaser.Types.Input.HitAreaCallback} hitAreaCallback - A callback to be invoked when the Game Object is interacted with. If you provide a shape you must also provide a callback.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     setHitArea: function (hitArea, hitAreaCallback)
     {
@@ -1493,7 +1525,7 @@ var Group = new Class({
      * @method Phaser.GameObjects.Group#shuffle
      * @since 3.21.0
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     shuffle: function ()
     {
@@ -1545,7 +1577,7 @@ var Group = new Class({
      * @param {integer} [index=0] - An optional offset to start searching from within the items array.
      * @param {integer} [direction=1] - The direction to iterate through the array. 1 is from beginning to end, -1 from end to beginning.
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     setVisible: function (value, index, direction)
     {
@@ -1560,7 +1592,7 @@ var Group = new Class({
      * @method Phaser.GameObjects.Group#toggleVisible
      * @since 3.0.0
      *
-     * @return {Phaser.GameObjects.Group} This Group object.
+     * @return {this} This Group object.
      */
     toggleVisible: function ()
     {
