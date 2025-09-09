@@ -2387,7 +2387,7 @@ var WebGLRenderer = new Class({
     createAttribLocation: function (program, name)
     {
         var attrib = new WebGLAttribLocationWrapper(this.gl, program, name);
-        if (attrib.location >= 0)
+        if (attrib.webGLAttribLocation >= 0)
         {
             this.glAttribLocationWrappers.push(attrib);
         }
